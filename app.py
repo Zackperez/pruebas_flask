@@ -27,6 +27,7 @@ def bienvenida():
 @app.route("/agregar_usuario_temporal", methods=['POST'])
 def agregar_usuario_temporal():
     datos_usuario = {
+        'id_usuario': request.json['Id_usuario'],
         'nombre': request.json['Nombre'],
         'apellido': request.json['Apellido'],
         'respuesta_abdominal': request.json['Respuesta_abdominal'],
@@ -37,7 +38,7 @@ def agregar_usuario_temporal():
     }
 
     datos_usuario_temporal.append(datos_usuario)
-
+    Id_usuario = datos_usuario['id_usuario']
     Nombre = datos_usuario['nombre']
     Apellido = datos_usuario['apellido']
     Respuesta_abdominal = datos_usuario['respuesta_abdominal']
@@ -48,7 +49,7 @@ def agregar_usuario_temporal():
     Diagnostico_final= sbr()
 
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO Usuario_Respuestas (Nombre, Apellido, Respuesta_abdominal, Respuesta_diarrea, Respuesta_estrenimiento, Respuesta_acidez, Respuesta_vomitos, Diagnostico_final) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", (Nombre,Apellido,Respuesta_abdominal,Respuesta_diarrea,Respuesta_estrenimiento ,Respuesta_acidez,Respuesta_vomitos, Diagnostico_final))
+    cur.execute("INSERT INTO Usuario_Respuestas (Id_usuario, Nombre, Apellido, Respuesta_abdominal, Respuesta_diarrea, Respuesta_estrenimiento, Respuesta_acidez, Respuesta_vomitos, Diagnostico_final) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)", (Id_usuario, Nombre, Apellido,Respuesta_abdominal,Respuesta_diarrea,Respuesta_estrenimiento ,Respuesta_acidez,Respuesta_vomitos, Diagnostico_final))
     #cur.execute("INSERT INTO Usuario (Nombre, Apellido) VALUES (%s,%s)", (Nombre, Apellido))
     #print("Insercion de usuario, exitosa")
     #cur.execute("INSERT INTO Respuestas (Respuesta_abdominal, Respuesta_diarrea, Respuesta_estrenimiento, Respuesta_acidez, Respuesta_vomitos, Diagnostico_final) VALUES (%s,%s,%s,%s,%s,%s)", (Respuesta_abdominal,Respuesta_diarrea,Respuesta_estrenimiento ,Respuesta_acidez,Respuesta_vomitos, Diagnostico_final))
@@ -63,6 +64,28 @@ def agregar_usuario_temporal():
 def mostrar_usuario_temporal():
     print(request.get_json())
     return 'creando usuario temporal'
+
+@app.route("/respuesta_sbr/<id>",methods = ['GET'])
+def respuesta_sbr(id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM Usuario_Respuestas WHERE Id_Usuario LIKE %s',[id])
+        #cur.execute( "SELECT * FROM records WHERE email LIKE %s", [search] )
+        rv = cur.fetchall()
+        cur.close()
+        payload = []
+        content = {}
+        for result in rv:
+            content = {"id_usuario":result[0],"Nombre":result[1],"Apellido":result[2],"Respuesta_abdominal":result[3],"Respuesta_diarrea":result[4],"Respuesta_estrenimiento":result[5],"Respuesta_acidez":result[6],"Respuesta_vomitos":result[7],"Diagnostico_final":result[8]}
+            payload.append(content)
+            content = {}
+        #respuesta_obtenida.append(sbr(rv))
+        return jsonify(payload)
+    except Exception as e:
+        print(e)
+        return jsonify({"informacion":e})
+
+    
 
 from sistema_basado_reglas.sistemadereglas import *
 from sistema_basado_reglas.reglas import *
