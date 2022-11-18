@@ -23,7 +23,6 @@ datos_usuario_temporal = []
 def bienvenida():
     return jsonify({"bienvenida": "hola"})
 
-
 @app.route("/agregar_usuario_temporal", methods=['POST'])
 def agregar_usuario_temporal():
     datos_usuario = {
@@ -50,22 +49,12 @@ def agregar_usuario_temporal():
 
     cur = mysql.connection.cursor()
     cur.execute("INSERT INTO Usuario_Respuestas (Id_usuario, Nombre, Apellido, Respuesta_abdominal, Respuesta_diarrea, Respuesta_estrenimiento, Respuesta_acidez, Respuesta_vomitos, Diagnostico_final) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)", (Id_usuario, Nombre, Apellido,Respuesta_abdominal,Respuesta_diarrea,Respuesta_estrenimiento ,Respuesta_acidez,Respuesta_vomitos, Diagnostico_final))
-    #cur.execute("INSERT INTO Usuario (Nombre, Apellido) VALUES (%s,%s)", (Nombre, Apellido))
-    #print("Insercion de usuario, exitosa")
-    #cur.execute("INSERT INTO Respuestas (Respuesta_abdominal, Respuesta_diarrea, Respuesta_estrenimiento, Respuesta_acidez, Respuesta_vomitos, Diagnostico_final) VALUES (%s,%s,%s,%s,%s,%s)", (Respuesta_abdominal,Respuesta_diarrea,Respuesta_estrenimiento ,Respuesta_acidez,Respuesta_vomitos, Diagnostico_final))
-    #print("Insercion de respuestas, exitosa")
     cur.close()
     mysql.connection.commit()
     print("Datos añadidos a la BD ")
     return jsonify({"informacion":"Registro exitoso del usuario y sus respuestas"})
 
-
-@app.route("/mostrar_usuario_temporal")
-def mostrar_usuario_temporal():
-    print(request.get_json())
-    return 'creando usuario temporal'
-
-@app.route("/respuesta_sbr/<id>",methods = ['GET'])
+@app.route("/respuesta_sbr/<id>", methods = ['GET'])
 def respuesta_sbr(id):
     try:
         cur = mysql.connection.cursor()
@@ -85,8 +74,6 @@ def respuesta_sbr(id):
         print(e)
         return jsonify({"informacion":e})
 
-    
-
 from sistema_basado_reglas.sistemadereglas import *
 from sistema_basado_reglas.reglas import *
 from sistema_basado_reglas.sbr_respuestas import *
@@ -97,8 +84,8 @@ def sbr():
 
     engine.reset()
 
-    print(datos_usuario_temporal)
-    print(type(datos_usuario_temporal))
+    #print(datos_usuario_temporal)
+    #print(type(datos_usuario_temporal))
     lista = datos_usuario_temporal[0]
     Respuesta_abdominal = lista['respuesta_abdominal']
     Respuesta_diarrea = lista['respuesta_diarrea']
@@ -115,6 +102,8 @@ def sbr():
     engine.run()
 
     respuesta_sbr = engine.lista_respuestas[0]
+
+    lista = []
 
     return respuesta_sbr
 
