@@ -35,7 +35,7 @@ def agregar_usuario_temporal():
         'respuesta_acidez': request.json['Respuesta_acidez'],
         'respuesta_vomitos': request.json['Respuesta_vomitos'],
     }
-
+    
     datos_usuario_temporal.append(datos_usuario)
     Id_usuario = datos_usuario['id_usuario']
     Nombre = datos_usuario['nombre']
@@ -57,9 +57,9 @@ def agregar_usuario_temporal():
 @app.route("/respuesta_sbr/<id>", methods = ['GET'])
 def respuesta_sbr(id):
     try:
+
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM Usuario_Respuestas WHERE Id_Usuario LIKE %s',[id])
-        #cur.execute( "SELECT * FROM records WHERE email LIKE %s", [search] )
         rv = cur.fetchall()
         cur.close()
         payload = []
@@ -68,7 +68,6 @@ def respuesta_sbr(id):
             content = {"id_usuario":result[0],"Nombre":result[1],"Apellido":result[2],"Respuesta_abdominal":result[3],"Respuesta_diarrea":result[4],"Respuesta_estrenimiento":result[5],"Respuesta_acidez":result[6],"Respuesta_vomitos":result[7],"Diagnostico_final":result[8]}
             payload.append(content)
             content = {}
-        #respuesta_obtenida.append(sbr(rv))
         return jsonify(payload)
     except Exception as e:
         print(e)
@@ -76,7 +75,6 @@ def respuesta_sbr(id):
 
 from sistema_basado_reglas.sistemadereglas import *
 from sistema_basado_reglas.reglas import *
-from sistema_basado_reglas.sbr_respuestas import *
 
 def sbr():
 
@@ -84,8 +82,6 @@ def sbr():
 
     engine.reset()
 
-    #print(datos_usuario_temporal)
-    #print(type(datos_usuario_temporal))
     lista = datos_usuario_temporal[0]
     Respuesta_abdominal = lista['respuesta_abdominal']
     Respuesta_diarrea = lista['respuesta_diarrea']
@@ -104,7 +100,6 @@ def sbr():
     respuesta_sbr = engine.lista_respuestas[0]
 
     lista = []
-
     return respuesta_sbr
 
 

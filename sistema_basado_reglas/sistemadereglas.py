@@ -1,5 +1,4 @@
 from sistema_basado_reglas.reglas import *
-from sistema_basado_reglas.sbr_respuestas import *
 
 class sistemadereglas(KnowledgeEngine):
 
